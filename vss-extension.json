@@ -1,0 +1,54 @@
+{
+    "manifestVersion": 1,
+    "id": "logicmonitor-sdt",
+    "version": "0.0.1",
+    "name": "Manage Logicmonitor SDT",
+    "description": "This tool allows you to manage Scheduled Downtimes in Logicmonitor.",
+    "publisher": "wearetriple",
+    "public": true,
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "icons": {
+        "default": "images/extension-icon.png"        
+    },
+    "tags": [
+        "Logicmonitor",
+        "SDT",
+        "Monitoring"
+    ],
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/wearetriple/ados-extension-logicmonitor"
+    },
+    "files": [
+        {
+            "path": "logicmonitor"
+        }
+    ],
+    "content": {
+        "license": {
+            "path": "LICENSE"
+        },
+        "details": {
+            "path": "README.md"
+        }
+    },
+    "contributions": [
+        {
+            "id": "logicmonitor",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "logicmonitor"
+            }
+        }
+    ]
+}

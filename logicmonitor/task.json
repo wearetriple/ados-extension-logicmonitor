@@ -1,0 +1,124 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "701034b0-7b0a-4ad0-a1f0-51ff02da3407",
+  "name": "logicmonitor-sdt",
+  "friendlyName": "Manage Logicmonitor SDT",
+  "description": "This task allows you to manage Scheduled Downtimes in Logicmonitor",
+  "helpMarkDown": "",
+  "category": "Utility",
+  "author": "Triple B.V.",
+  "visibility": ["Build", "Release"],
+  "runsOn": ["Agent", "DeploymentGroup"],
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "instanceNameFormat": "$(Action) PRTG Sensor $(PRTGSensorId)",
+  "inputs": [
+    {
+      "name": "accountName",
+      "type": "string",
+      "label": "Account Name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Logicmonitor Account Name"
+    },
+    {
+      "name": "duration",
+      "type": "int",
+      "label": "Duration of SDT (in minutes)",
+      "defaultValue": "5",
+      "required": false,
+      "helpMarkDown": "Duration of SDT (in minutes)",
+      "visibleRule": "action == Pause"
+    },    
+    {
+      "name": "credentialType",
+      "type": "pickList",
+      "label": "Credentials Type",
+      "defaultValue": "LMVv1",
+      "required": true,
+      "options": {
+        "lmvV1": "LMVv1",
+        "bearer": "Bearer"
+      }
+    },
+    {
+      "name": "accessId",
+      "type": "string",
+      "label": "Access ID",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "API Token Access ID",
+      "visibleRule": "credentialType == LMVv1"
+    },
+    {
+      "name": "accessKey",
+      "type": "string",
+      "label": "Access Key",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "API Token Access Key",
+      "visibleRule": "credentialType == LMVv1"
+    },
+    {
+      "name": "bearerToken",
+      "type": "string",
+      "label": "Bearer Token",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "API Token Bearer Token",
+      "visibleRule": "credentialType == Bearer"
+    },
+    {
+      "name": "sensorID",
+      "type": "int",
+      "label": "Sensor ID",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Sensor ID",
+      "visibleRule": "action == Pause"
+    },
+    {
+      "name": "sdtId",
+      "type": "int",
+      "label": "STD ID",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "STD ID",
+      "visibleRule": "action == Resume"
+    },
+    {
+      "name": "sdtType",
+      "type": "pickList",
+      "label": "SDT Type",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "SDT type",
+      "options": {
+        "ResourceGroupSDT": "ResourceGroupSDT",
+        "ResourceSDT": "ResourceSDT",
+        "WebsiteGroupSDT": "WebsiteGroupSDT",
+        "WebsiteSDT": "WebsiteSDT"
+      }
+    },
+    {
+      "name": "action",
+      "label": "Action",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Action",
+      "type": "pickList",
+      "options": {
+        "Pause": "Pause",
+        "Resume": "Resume"
+      }
+    }
+  ],
+  "execution": {
+    "Node": {
+      "target": "index.js"
+    }
+  }
+}
