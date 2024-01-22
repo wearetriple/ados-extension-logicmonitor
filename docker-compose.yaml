@@ -1,0 +1,15 @@
+version: '3'
+services:
+  lm-task:
+    build:
+      context: logicmonitor/
+      dockerfile: ../Dockerfile
+    environment:
+      - INPUT_ACCOUNTNAME=techopsalpha
+      - INPUT_ACCESSID=NtvH7SS4FAz3KsZ5kI56
+      - INPUT_CREDENTIALTYPE=LMVv1
+      - INPUT_SDTTYPE=WebsiteSDT
+      - INPUT_ACTION=Pause
+      - INPUT_SENSORID=242
+    env_file:
+      - .env.local

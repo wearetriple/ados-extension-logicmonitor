@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "logicmonitor-sdt",
-    "version": "0.0.1",
+    "version": "0.0.6",
     "name": "Manage Logicmonitor SDT",
     "description": "This tool allows you to manage Scheduled Downtimes in Logicmonitor.",
     "publisher": "wearetriple",

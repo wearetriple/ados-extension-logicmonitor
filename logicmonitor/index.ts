@@ -6,13 +6,13 @@ async function run() {
 
     const credentialType: string = tl.getInputRequired("credentialType");
     const accountName: string = tl.getInputRequired("accountName");
-    const sdtType: string = tl.getInputRequired("sdtType");
-    const sensorID: string = tl.getInputRequired("sensorID");
     const action: string = tl.getInputRequired("action");
+    const sensorID: string = tl.getInputRequired("sensorID");
 
     let lm = new LogicMonitor(accountName);
 
-    if (credentialType === "bearer") {
+    // Grab the relevant credentials based on the given Authentication Type
+    if (credentialType === "Bearer") {
       const bearerToken: string = tl.getInputRequired("bearerToken");
       lm.useBearerToken(bearerToken);
     } else if (credentialType === "LMVv1") {
@@ -21,8 +21,10 @@ async function run() {
       lm.useLMVv1Token(accessId, accessKey);
     }
 
+    // If we need to pause the Sensor
     if (action === "Pause") {
-
+      const sdtType: string = tl.getInputRequired("sdtType");
+      
       let sdtId: string = "";
       let duration: string | undefined = tl.getInput("duration");
       let durationInMinutes: number;
@@ -33,16 +35,35 @@ async function run() {
       }
 
       const sdt = lm.sdtRequest(durationInMinutes, sdtType, parseInt(sensorID));
-      let lease = await lm.postSDT(sdt);
+      let id = await lm.postSDT(sdt);
   
-      if (lease.id !== undefined) {
-        sdtId = lease.id;
+      if (id !== undefined) {
+        sdtId = id;
+      } else {
+        throw new Error("Failed to get SDT ID");
       }
+      // Appending STD ID with the Sensor ID so that if multiple Sensors are paused, we can find the corresponding STD ID
+      sdtId = sdtId + "-" + sensorID
 
-      tl.setVariable("sdtId", sdtId, false);
-    } else if (action === "Unpause") {
-      const sdtId: string = tl.getInputRequired("sdtId");
-      lm.deleteSDT(sdtId)
+      // Appending SDT ID with this one, in case multiple exist
+      const existingStdId: string | undefined = tl.getInput("sdtId");
+      if (existingStdId !== undefined) {
+        sdtId = sdtId + "," + existingStdId
+      }
+      tl.setVariable("sdtId", sdtId, false, true); 
+
+    // If we need to resume the Sensor
+    } else if (action === "Resume") {
+      const sdtIds: string = tl.getInputRequired("sdtId");
+      const stdList = sdtIds.split(",");
+
+      // Loop trough all the SDT IDs and delete the one matching the sensor ID
+      for (const sdtId of stdList) {
+        const split = sdtId.split("-");
+        if (split[1] === sensorID) {
+          await lm.deleteSDT(sdtId) 
+        }
+      }
     }
     
   } catch (err) {
