@@ -1,8 +1,6 @@
 import * as crypto from "crypto";
 import axios, {
-  AxiosHeaders,
   AxiosInstance,
-  AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
 
@@ -33,7 +31,7 @@ export class LogicMonitor {
         let method = "";
         let url = "";
         if (config.method !== undefined) {
-          method = config.method;
+          method = config.method.toUpperCase();
         }
         if (config.url !== undefined) {
           url = config.url;
