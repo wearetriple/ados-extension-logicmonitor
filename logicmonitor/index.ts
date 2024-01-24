@@ -38,25 +38,30 @@ async function run() {
       const sdt = lm.sdtRequest(durationInMinutes, sdtType, parseInt(sensorID));
       let response = await lm.postSDT(sdt);
 
-      if (response.id !== undefined) {
-        sdtId = response.id;
-      } else {
+      if (response.id === undefined) {
         throw new Error("Failed to get SDT ID");
       }
+      sdtId = response.id;
+      tl.debug("Response: " + response);
 
       // Appending STD ID with the Sensor ID so that if multiple Sensors are paused, we can find the corresponding STD ID
       sdtId = `${sdtId}-${sensorID}`
 
       // Appending SDT ID with this one, in case multiple exist
-      const existingStdId: string | undefined = tl.getInput("sdtId");
+      const existingStdId = tl.getTaskVariable("sdtId");
       if (existingStdId !== undefined) {
         sdtId = `${sdtId},${existingStdId}`
       }
       
-      tl.setTaskVariable("sdtId", sdtId,false);
+      tl.setTaskVariable('sdtId', sdtId, false);
 
     // If we need to resume the Sensor
     } else if (action === "Resume") {
+      const varList = tl.getVariables()
+      for (let variable in varList) {
+        tl.debug(variable)
+      }
+
       const sdtIds = tl.getTaskVariable("sdtId");
       if (sdtIds === undefined) {
         throw new Error("Failed to get SDT ID");
@@ -69,7 +74,8 @@ async function run() {
         const split = sdtId.split("-");
         if (split[1] === sensorID) {
           triggered = true;
-          await lm.deleteSDT(split[0]) 
+          let response = await lm.deleteSDT(split[0]) 
+          tl.debug("Response: " + response);
         }
       }
       
