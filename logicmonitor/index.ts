@@ -45,19 +45,22 @@ async function run() {
       }
 
       // Appending STD ID with the Sensor ID so that if multiple Sensors are paused, we can find the corresponding STD ID
-      sdtId = sdtId + "-" + sensorID
+      sdtId = `${sdtId}-${sensorID}`
 
       // Appending SDT ID with this one, in case multiple exist
       const existingStdId: string | undefined = tl.getInput("sdtId");
       if (existingStdId !== undefined) {
-        sdtId = sdtId + "," + existingStdId
+        sdtId = `${sdtId},${existingStdId}`
       }
       
       tl.setTaskVariable("sdtId", sdtId,false);
 
     // If we need to resume the Sensor
     } else if (action === "Resume") {
-      const sdtIds: string = tl.getInputRequired("sdtId");
+      const sdtIds = tl.getTaskVariable("sdtId");
+      if (sdtIds === undefined) {
+        throw new Error("Failed to get SDT ID");
+      }
       const stdList = sdtIds.split(",");
 
       // Loop trough all the SDT IDs and delete the one matching the sensor ID

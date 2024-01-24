@@ -12,7 +12,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 8
+    "Patch": 10
   },
   "instanceNameFormat": "$(Action) PRTG Sensor $(PRTGSensorId)",
   "inputs": [
@@ -81,15 +81,6 @@
         "Pause": "Pause",
         "Resume": "Resume"
       }
-    },
-    {
-      "name": "sdtId",
-      "type": "string",
-      "label": "STD ID",
-      "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "STD ID",
-      "visibleRule": "action == Resume"
     },
     {
       "name": "duration",
