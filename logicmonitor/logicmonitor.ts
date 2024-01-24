@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
 export class LogicMonitor {
   private baseURL: string;
@@ -7,12 +7,12 @@ export class LogicMonitor {
   private accessKey: string | undefined;
   private bearerToken: string | undefined;
   private tokenType: string | undefined;
-  private axiosClient: AxiosInstance;
+  private client: AxiosInstance;
 
   constructor(accountName: string) {
     this.baseURL = `https://${accountName}.logicmonitor.com/santaba/rest`;
 
-    this.axiosClient = axios.create({
+    this.client = axios.create({
       baseURL: this.baseURL,
       headers: {
         Accept: "application/json",
@@ -23,7 +23,7 @@ export class LogicMonitor {
     });
 
     // Adding the authorization to all requests
-    this.axiosClient.interceptors.request.use(
+    this.client.interceptors.request.use(
       (config) => {
         let method = "";
         let url = "";
@@ -34,12 +34,7 @@ export class LogicMonitor {
           url = config.url;
         }
 
-        config.headers["Authorization"] = this.getCredentials(
-          method,
-          config.data,
-          url
-        );
-        console.log(config);
+        config.headers["Authorization"] = this.getCredentials( method, config.data, url );
         return config;
       },
       (error) => {
@@ -91,17 +86,16 @@ export class LogicMonitor {
     }
     // If no epoch is provided, use the current time
     // Used for testing purposes
-    if (epoch === undefined) {
-      epoch = new Date().getTime();
-    }
+    const epochTime = epoch ?? new Date().getTime();
+    const requestBody = body ?? "";
 
-    let msg = verb.toUpperCase() + epoch + body + path;
+    let msg = verb.toUpperCase() + epochTime + requestBody + path;
     const signatureHex = crypto
       .createHmac("sha256", accessKey)
       .update(msg)
       .digest("hex");
     const sigBase64 = btoa(signatureHex);
-    return this.accessID + ":" + sigBase64 + ":" + epoch;
+    return `${this.accessID}:${sigBase64}:${epochTime}`;
   }
 
   /**
@@ -119,16 +113,15 @@ export class LogicMonitor {
     }
 
     if (this.tokenType === "LMVv1") {
-      let token = this.generateLMv1Token(verb, body, path);
+      const token = this.generateLMv1Token(verb, body, path);
       return "LMv1 " + token;
     }
 
     if (this.tokenType === "Bearer") {
-      if (this.bearerToken !== undefined) {
-        return "Bearer " + this.bearerToken;
-      } else {
+      if (!this.bearerToken) {
         throw new Error("No bearer token set");
-      }
+      } 
+      return `Bearer ${this.bearerToken}`;
     }
     throw new Error("Failed to get credentials");
   }
@@ -138,21 +131,21 @@ export class LogicMonitor {
    * @param sdt SDT type to post
    * @returns SDT response
    */
-  public async postSDT(sdt: AllSDTTypes) {
+  public async postSDT(sdt: AllSDTTypes): Promise<AllSDTTypes> {
     const path = `/sdt/sdts`;
-    let jsonString = JSON.stringify(sdt);
-
-    this.axiosClient
-      .post(path, jsonString)
+    const jsonSdt = JSON.stringify(sdt)
+    return await this.client
+      .post<AllSDTTypes>(path, jsonSdt)
       .then((res) => {
-        console.log("Success: " + res.status, res.data);
-        return res.data.id;
+        let { data } = res
+        console.log("Paused sensor. SDT ID: " + data.id);
+        return data
       })
       .catch((err) => {
         console.log("Failed: " + err.response.status, err.request._header);
-        return undefined;
+        return err;
       });
-  }
+}
 
   /**
    * Delete SDT
@@ -161,26 +154,19 @@ export class LogicMonitor {
    */
 
   public async deleteSDT(sdtID: string) {
-    const verb = "DELETE";
     const path = `/sdt/sdts/${sdtID}`;
-    const url = this.baseURL + path;
 
-    const response: AxiosResponse = await axios({
-      method: verb,
-      url: url,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Version": "3",
-        Authorization: this.getCredentials(verb, "", path),
-      },
-    });
-
-    if (response.status !== 200) {
-      throw new Error(`${response.status}`);
-    }
-
-    return response.data as ErrorResponse;
+    return this.client
+      .delete<AllSDTTypes>(path)
+      .then((res) => {
+        let { data } = res
+        console.log("Delete SDT: " + sdtID);
+        return data;
+      })
+      .catch((err) => {
+        console.log("Failed: " + err.response.status, err.request._header);
+        return err;
+      });
   }
 
   /**

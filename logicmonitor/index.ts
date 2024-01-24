@@ -1,5 +1,6 @@
 import tl = require("azure-pipelines-task-lib");
 import { LogicMonitor } from "./logicmonitor";
+import { AxiosError } from "axios";
 
 async function run() {
   try {
@@ -35,13 +36,14 @@ async function run() {
       }
 
       const sdt = lm.sdtRequest(durationInMinutes, sdtType, parseInt(sensorID));
-      let id = await lm.postSDT(sdt);
-  
-      if (id !== undefined) {
-        sdtId = id;
+      let response = await lm.postSDT(sdt);
+
+      if (response.id !== undefined) {
+        sdtId = response.id;
       } else {
         throw new Error("Failed to get SDT ID");
       }
+
       // Appending STD ID with the Sensor ID so that if multiple Sensors are paused, we can find the corresponding STD ID
       sdtId = sdtId + "-" + sensorID
 
@@ -61,7 +63,7 @@ async function run() {
       for (const sdtId of stdList) {
         const split = sdtId.split("-");
         if (split[1] === sensorID) {
-          await lm.deleteSDT(sdtId) 
+          await lm.deleteSDT(split[0]) 
         }
       }
     }

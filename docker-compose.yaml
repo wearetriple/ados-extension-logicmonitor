@@ -6,10 +6,11 @@ services:
       dockerfile: ../Dockerfile
     environment:
       - INPUT_ACCOUNTNAME=techopsalpha
-      - INPUT_ACCESSID=NtvH7SS4FAz3KsZ5kI56
+      - INPUT_ACCESSID=qF7b5jbn893CAykACiNC
       - INPUT_CREDENTIALTYPE=LMVv1
       - INPUT_SDTTYPE=WebsiteSDT
-      - INPUT_ACTION=Pause
+      - INPUT_ACTION=Resume
       - INPUT_SENSORID=242
+      - INPUT_SDTID=S_82-242
     env_file:
       - .env.local
