@@ -1,8 +1,5 @@
 import * as crypto from "crypto";
-import axios, {
-  AxiosInstance,
-  AxiosResponse,
-} from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export class LogicMonitor {
   private baseURL: string;
@@ -31,13 +28,17 @@ export class LogicMonitor {
         let method = "";
         let url = "";
         if (config.method !== undefined) {
-          method = config.method.toUpperCase();
+          method = config.method;
         }
         if (config.url !== undefined) {
           url = config.url;
         }
 
-        config.headers["Authorization"] = this.getCredentials(method, config.data, url);
+        config.headers["Authorization"] = this.getCredentials(
+          method,
+          config.data,
+          url
+        );
         console.log(config);
         return config;
       },
@@ -78,15 +79,23 @@ export class LogicMonitor {
    * @param path Path used relative to the logicmonitor default API endpoint
    * @returns Authorization token
    */
-  private generateLMv1Token(verb: string, body: string, path: string): string {
+  private generateLMv1Token(
+    verb: string,
+    body: string,
+    path: string,
+    epoch?: number
+  ): string {
     let accessKey = "";
     if (this.accessKey !== undefined) {
       accessKey = this.accessKey;
     }
-    let epoch = new Date().getTime();
+    // If no epoch is provided, use the current time
+    // Used for testing purposes
+    if (epoch === undefined) {
+      epoch = new Date().getTime();
+    }
 
-    let msg = verb + epoch + body + path;
-    console.log(msg);
+    let msg = verb.toUpperCase() + epoch + body + path;
     const signatureHex = crypto
       .createHmac("sha256", accessKey)
       .update(msg)
