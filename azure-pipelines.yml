@@ -102,7 +102,7 @@ stages:
               connectTo: 'VsTeam'
               connectedServiceName: 'Visual Studio Marketplace (wearetriple)'
               fileType: 'vsix'
-              vsixFile: '$(PublisherID).$(ExtensionName)/$(PublisherID)..vsix'
+              vsixFile: '$(ArtifactName)/$(PublisherID).$(ExtensionID)-*.vsix'
               publisherId: '$(PublisherID)'
               extensionId: '$(ExtensionID)'
               extensionName: '$(ExtensionName)'
