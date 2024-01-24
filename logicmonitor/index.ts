@@ -20,7 +20,7 @@ async function pause(lm: LogicMonitor, sensorID: number): Promise<void> {
   const response = await lm.postSDT(sdt);
   tl.debug(`Response: ${JSON.stringify(response)}`);
 
-  console.log("Paused sensor. SDT ID: " + response.id);
+  console.log(`Paused sensor. SDT ID: ${response.id}. Comment: ${response.comment}`);
 }
 
 /**
@@ -32,19 +32,21 @@ async function pause(lm: LogicMonitor, sensorID: number): Promise<void> {
 async function resume(lm: LogicMonitor, sensorID: number) {
   // Retrieve a list of all SDT matching a specific comment filter
   const sdtList = await lm.getSDT(sensorID)
-  
+
   if (sdtList.total === 0) {
     throw new Error(`No SDT found to delete. Sensor ${sensorID} is not paused trough Azure Devops`);
   }
   if (sdtList.total !== 1) {
     throw new Error(`Expected 1 SDT, got ${sdtList.total}. Impossible to resume sensor without know which SDT to delete`);
   }
-  if (sdtList.items[0].id === undefined) {
+  const sdtID = sdtList.items[0].id;
+  if (sdtID === undefined) {
     throw new Error(`Invalid SDT ID received`);
   }
-  
-  await lm.deleteSDT(sdtList.items[0].id);
-  console.log("Deleted STD");
+
+  tl.debug(`Found SDT ID: ${sdtID}`);
+  await lm.deleteSDT(sdtID);
+  console.log("Deleted STD. Resuming sensor.");
 }
 
 /**

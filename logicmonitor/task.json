@@ -10,9 +10,9 @@
   "visibility": ["Build", "Release"],
   "runsOn": ["Agent", "DeploymentGroup"],
   "version": {
-    "Major": 0,
-    "Minor": 1,
-    "Patch": 15
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
   },
   "instanceNameFormat": "$(Action) PRTG Sensor $(PRTGSensorId)",
   "inputs": [
