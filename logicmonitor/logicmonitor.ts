@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 export class LogicMonitor {
   private baseURL: string;
@@ -8,6 +8,8 @@ export class LogicMonitor {
   private bearerToken: string | undefined;
   private tokenType: string | undefined;
   private client: AxiosInstance;
+
+  public pauseMessage = "Paused by Azure Devops";
 
   constructor(accountName: string) {
     this.baseURL = `https://${accountName}.logicmonitor.com/santaba/rest`;
@@ -138,12 +140,10 @@ export class LogicMonitor {
       .post<AllSDTTypes>(path, jsonSdt)
       .then((res) => {
         let { data } = res
-        console.log("Paused sensor. SDT ID: " + data.id);
         return data
       })
       .catch((err) => {
-        console.log("Failed: " + err.response.status, err.request._header);
-        return err;
+        throw new Error("Failed to create SDT: " + err.response.status, err.request._header);
       });
 }
 
@@ -160,12 +160,32 @@ export class LogicMonitor {
       .delete<AllSDTTypes>(path)
       .then((res) => {
         let { data } = res
-        console.log("Delete SDT: " + sdtID);
         return data;
       })
       .catch((err) => {
-        console.log("Failed: " + err.response.status, err.request._header);
-        return err;
+        throw new Error("Failed to delete SDT: " + err.response.status, err.request._header);
+      });
+  }
+
+  /**
+   * Get SDT
+   * @returns SDT 
+   */
+  public async getSDT(sensorID: number): Promise<AllSDTTypesList> {
+    const path = `/sdt/sdts`;
+
+    return await this.client
+      .get<AllSDTTypesList>(path, {
+        params: {
+          filter: `comment:"${this.pauseMessage} - ${sensorID}"`
+        },
+      })
+      .then((res) => {
+        let { data } = res
+        return data
+      })
+      .catch((err) => {
+        throw new Error("Failed to get SDT list: " + err.response.status, err.request._header);
       });
   }
 
@@ -188,7 +208,7 @@ export class LogicMonitor {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       startDateTime: now,
       endDateTime: now + durationInMinutes * 60000,
-      comment: "Paused by Azure Devops",
+      comment: `${this.pauseMessage} - ${sensorID}`,
     };
 
     switch (sdtType) {

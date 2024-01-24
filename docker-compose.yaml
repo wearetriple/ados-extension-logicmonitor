@@ -10,7 +10,7 @@ services:
       - INPUT_CREDENTIALTYPE=LMVv1
       - INPUT_SDTTYPE=WebsiteSDT
       - INPUT_ACTION=Resume
+      # - INPUT_ACTION=Pause
       - INPUT_SENSORID=242
-      - INPUT_SDTID=S_82-242
     env_file:
       - .env.local

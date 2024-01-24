@@ -1,3 +1,10 @@
+type AllSDTTypesList = {
+  total: number;
+  items: AllSDTTypes[];
+  searchId: string;
+  isMin: boolean;
+}
+
 type AllSDTTypes =
   | WebsiteSDT
   | WebsiteGroupSDT
