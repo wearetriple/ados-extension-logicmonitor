@@ -51,7 +51,6 @@ stages:
           - task: Bash@3
             displayName: Compile Javascript
             inputs:
-            condition: 
               targetType: "inline"
               script: |
                 cd logicmonitor
