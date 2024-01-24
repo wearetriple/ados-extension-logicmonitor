@@ -12,7 +12,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 7
+    "Patch": 8
   },
   "instanceNameFormat": "$(Action) PRTG Sensor $(PRTGSensorId)",
   "inputs": [
@@ -112,7 +112,8 @@
         "ResourceSDT": "ResourceSDT",
         "WebsiteGroupSDT": "WebsiteGroupSDT",
         "WebsiteSDT": "WebsiteSDT"
-      }
+      },
+      "visibleRule": "action == Pause"
     }
   ],
   "execution": {

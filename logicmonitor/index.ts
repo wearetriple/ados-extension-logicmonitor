@@ -52,7 +52,8 @@ async function run() {
       if (existingStdId !== undefined) {
         sdtId = sdtId + "," + existingStdId
       }
-      tl.setVariable("sdtId", sdtId, false, true); 
+      
+      tl.setTaskVariable("sdtId", sdtId,false);
 
     // If we need to resume the Sensor
     } else if (action === "Resume") {
@@ -60,11 +61,17 @@ async function run() {
       const stdList = sdtIds.split(",");
 
       // Loop trough all the SDT IDs and delete the one matching the sensor ID
+      let triggered = false;
       for (const sdtId of stdList) {
         const split = sdtId.split("-");
         if (split[1] === sensorID) {
+          triggered = true;
           await lm.deleteSDT(split[0]) 
         }
+      }
+      
+      if (!triggered) {
+        throw new Error("Failed to get SDT ID");
       }
     }
     
