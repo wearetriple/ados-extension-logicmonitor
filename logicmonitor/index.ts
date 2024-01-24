@@ -48,12 +48,11 @@ async function run() {
       sdtId = `${sdtId}-${sensorID}`
 
       // Appending SDT ID with this one, in case multiple exist
-      const existingStdId = tl.getTaskVariable("sdtId");
+      const existingStdId = tl.getTaskVariable('sdtId');
       if (existingStdId !== undefined) {
         sdtId = `${sdtId},${existingStdId}`
       }
-
-      tl.setTaskVariable('sdtId', sdtId, false);
+      tl.setVariable('sdtId', sdtId, false, true);
 
     // If we need to resume the Sensor
     } else if (action === "Resume") {
@@ -62,7 +61,7 @@ async function run() {
         tl.debug(variable)
       }
 
-      const sdtIds = tl.getTaskVariable("sdtId");
+      const sdtIds = tl.getTaskVariable('sdtId');
       if (sdtIds === undefined) {
         throw new Error("Failed to get SDT ID");
       }
