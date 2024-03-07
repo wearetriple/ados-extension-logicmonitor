@@ -14,7 +14,7 @@
     "Minor": 0,
     "Patch": 0
   },
-  "instanceNameFormat": "$(Action) PRTG Sensor $(PRTGSensorId)",
+  "instanceNameFormat": "$(Action) Logicmonitor sensor $(sensorID)",
   "inputs": [
     {
       "name": "accountName",
